@@ -549,6 +549,9 @@ export const vsCodeMocks = {
     EndOfLine,
     CancellationTokenSource,
     WorkspaceEdit,
+    env: {
+        openExternal: (uri: Uri) => Promise.resolve(true),
+    },
     window: {
         showInformationMessage: () => undefined,
         showWarningMessage: () => undefined,
@@ -590,12 +593,7 @@ export const vsCodeMocks = {
     ConfigurationTarget: {
         Global: undefined,
     },
-    Uri: {
-        file: (path: string) => ({
-            fsPath: path,
-            path,
-        }),
-    },
+    Uri,
     extensions: {
         getExtension() {
             return undefined

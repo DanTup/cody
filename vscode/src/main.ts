@@ -18,9 +18,10 @@ import { VSCodeEditor } from './editor/vscode-editor'
 import { PlatformContext } from './extension.common'
 import { configureExternalServices } from './external-services'
 import { FixupController } from './non-stop/FixupController'
+import { maybeShowExtensionUpdateNotification } from './notifications/extension-update-notifications'
 import { showSetupNotification } from './notifications/setup-notification'
 import { AuthProvider } from './services/AuthProvider'
-import { createOrUpdateEventLogger } from './services/EventLogger'
+import { createOrUpdateEventLogger, extensionDetails } from './services/EventLogger'
 import { showFeedbackSupportQuickPick } from './services/FeedbackOptions'
 import { GuardrailsProvider } from './services/GuardrailsProvider'
 import { Comment, InlineController } from './services/InlineController'
@@ -480,6 +481,14 @@ const register = async (
     }
 
     await showSetupNotification(initialConfig)
+
+    if (!isExtensionModeDevOrTest) {
+        // Don't await, this won't resolve until the user interacts with the notification.
+        maybeShowExtensionUpdateNotification(extensionDetails.version).catch(error =>
+            console.error(`Failed to show extension update notification: ${error}`)
+        )
+    }
+
     return {
         disposable: vscode.Disposable.from(...disposables),
         onConfigurationChange: newConfig => {
